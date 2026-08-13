@@ -15,11 +15,15 @@ jobs:
           submodules: recursive
           fetch-depth: 1
 
-      - name: Install dependencies
+      - name: Setup MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
+      - name: Install CMake and Ninja
         shell: pwsh
         run: |
-          choco install ninja -y
-          choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System' -y
+          choco install cmake ninja -y
 
       - name: Download Skia
         shell: pwsh
@@ -35,28 +39,34 @@ jobs:
             -DestinationPath C:\deps\skia `
             -Force
 
-      - name: Configure
+      - name: Configure Aseprite
         shell: cmd
         run: |
+          set CC=cl
+          set CXX=cl
+
           mkdir build
           cd build
 
           cmake -G Ninja ^
             -DCMAKE_BUILD_TYPE=RelWithDebInfo ^
+            -DCMAKE_C_COMPILER=cl ^
+            -DCMAKE_CXX_COMPILER=cl ^
+            -DCMAKE_IGNORE_PATH=C:\MinGW\bin ^
             -DLAF_BACKEND=skia ^
             -DSKIA_DIR=C:\deps\skia ^
             -DSKIA_LIBRARY_DIR=C:\deps\skia\out\Release-x64 ^
             -DSKIA_LIBRARY=C:\deps\skia\out\Release-x64\skia.lib ^
             ..
 
-      - name: Build
+      - name: Build Aseprite
         shell: cmd
         run: |
           cd build
           ninja aseprite
 
-      - name: Upload Aseprite EXE
+      - name: Upload Aseprite
         uses: actions/upload-artifact@v4
         with:
-          name: Aseprite-Windows
+          name: Aseprite-Windows-x64
           path: build/bin/aseprite.exe
