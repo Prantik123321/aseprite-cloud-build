@@ -1,72 +1,122 @@
-name: Build Aseprite Windows
+name: Build Aseprite Windows x64
 
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
-    runs-on: windows-2025
+    name: Build Aseprite for Windows x64
+    runs-on: windows-2022
 
     steps:
-      - name: Checkout Aseprite
+      - name: Checkout build template
         uses: actions/checkout@v4
-        with:
-          repository: aseprite/aseprite
-          submodules: recursive
-          fetch-depth: 1
+
+      - name: Install Python requirements
+        shell: pwsh
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Download Aseprite and Skia
+        shell: pwsh
+        run: |
+          python download.py
+
+      - name: Setup Ninja
+        uses: ashutoshvarma/setup-ninja@v1.1
 
       - name: Setup MSVC
-        uses: ilammy/msvc-dev-cmd@v1
+        uses: TheMrMilchmann/setup-msvc-dev@v3
         with:
           arch: x64
 
-      - name: Install CMake and Ninja
-        shell: pwsh
-        run: |
-          choco install cmake ninja -y
-
-      - name: Download Skia
-        shell: pwsh
-        run: |
-          New-Item -ItemType Directory -Force C:\deps\skia | Out-Null
-
-          Invoke-WebRequest `
-            -Uri "https://github.com/aseprite/skia/releases/download/m124-08a5439a6b/Skia-Windows-Release-x64.zip" `
-            -OutFile C:\skia.zip
-
-          Expand-Archive `
-            -Path C:\skia.zip `
-            -DestinationPath C:\deps\skia `
-            -Force
-
       - name: Configure Aseprite
-        shell: cmd
+        shell: pwsh
         run: |
-          set CC=cl
-          set CXX=cl
+          New-Item -ItemType Directory -Force build | Out-Null
 
-          mkdir build
-          cd build
-
-          cmake -G Ninja ^
-            -DCMAKE_BUILD_TYPE=RelWithDebInfo ^
-            -DCMAKE_C_COMPILER=cl ^
-            -DCMAKE_CXX_COMPILER=cl ^
-            -DCMAKE_IGNORE_PATH=C:\MinGW\bin ^
-            -DLAF_BACKEND=skia ^
-            -DSKIA_DIR=C:\deps\skia ^
-            -DSKIA_LIBRARY_DIR=C:\deps\skia\out\Release-x64 ^
-            -DSKIA_LIBRARY=C:\deps\skia\out\Release-x64\skia.lib ^
-            ..
+          cmake `
+            "${{ github.workspace }}/src/aseprite" `
+            -G Ninja `
+            -DCMAKE_BUILD_TYPE=MinSizeRel `
+            -DLAF_BACKEND=skia `
+            -DSKIA_DIR="${{ github.workspace }}/src/skia" `
+            -DSKIA_LIBRARY_DIR="${{ github.workspace }}/src/skia/out/Release-x64" `
+            -DSKIA_LIBRARY="${{ github.workspace }}/src/skia/out/Release-x64/skia.lib"
 
       - name: Build Aseprite
-        shell: cmd
+        shell: pwsh
         run: |
-          cd build
-          ninja aseprite
+          cmake --build build --config MinSizeRel --target aseprite
 
-      - name: Upload Aseprite
+      - name: Verify executable
+        shell: pwsh
+        run: |
+          $exe = "${{ github.workspace }}/build/bin/aseprite.exe"
+
+          if (!(Test-Path $exe)) {
+            Write-Host "Aseprite executable was not created."
+            exit 1
+          }
+
+          Write-Host "Aseprite executable found:"
+          Get-Item $exe
+
+      - name: Check OpenSSL DLL
+        shell: pwsh
+        run: |
+          $bin = "${{ github.workspace }}/build/bin"
+
+          Write-Host "Searching for required DLLs..."
+
+          $crypto = Get-ChildItem `
+            -Path "${{ github.workspace }}/build" `
+            -Filter "libcrypto-3-x64.dll" `
+            -Recurse `
+            -ErrorAction SilentlyContinue |
+            Select-Object -First 1
+
+          $ssl = Get-ChildItem `
+            -Path "${{ github.workspace }}/build" `
+            -Filter "libssl-3-x64.dll" `
+            -Recurse `
+            -ErrorAction SilentlyContinue |
+            Select-Object -First 1
+
+          if ($crypto) {
+            Copy-Item $crypto.FullName "$bin\libcrypto-3-x64.dll" -Force
+            Write-Host "libcrypto-3-x64.dll copied."
+          }
+
+          if ($ssl) {
+            Copy-Item $ssl.FullName "$bin\libssl-3-x64.dll" -Force
+            Write-Host "libssl-3-x64.dll copied."
+          }
+
+          Write-Host "`nFinal build/bin contents:"
+          Get-ChildItem $bin
+
+      - name: Get Aseprite version
+        id: version
+        shell: pwsh
+        run: |
+          $version = Get-Content "${{ github.workspace }}/src/aseprite/version.txt"
+          "version=$version" >> $env:GITHUB_OUTPUT
+
+      - name: Create portable ZIP
+        shell: pwsh
+        run: |
+          Compress-Archive `
+            -Path "${{ github.workspace }}/build/bin/*" `
+            -DestinationPath "${{ github.workspace }}/Aseprite-Windows-x64-${{ steps.version.outputs.version }}.zip" `
+            -Force
+
+      - name: Upload portable ZIP
         uses: actions/upload-artifact@v4
         with:
           name: Aseprite-Windows-x64
-          path: build/bin/aseprite.exe
+          path: Aseprite-Windows-x64-${{ steps.version.outputs.version }}.zip
