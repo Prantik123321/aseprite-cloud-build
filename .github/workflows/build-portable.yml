@@ -1,4 +1,4 @@
-name: Build Aseprite Portable (Fixed)
+name: Build Aseprite Portable (Final Fixed)
 
 on:
   workflow_dispatch:
@@ -36,7 +36,7 @@ jobs:
         Expand-Archive -Path "cmake.zip" -DestinationPath "cmake" -Force
         $cmakePath = "$PWD\cmake\cmake-3.24.3-windows-x86_64\bin"
         echo "$cmakePath" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-        Write-Host "CMake 3.24.3 installed at: $cmakePath"
+        Write-Host "CMake 3.24.3 installed"
 
     - name: Download Ninja
       shell: powershell
@@ -46,7 +46,7 @@ jobs:
         Expand-Archive -Path "ninja.zip" -DestinationPath "ninja" -Force
         $ninjaPath = "$PWD\ninja"
         echo "$ninjaPath" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-        Write-Host "Ninja installed at: $ninjaPath"
+        Write-Host "Ninja installed"
 
     - name: Download Skia (Prebuilt)
       shell: powershell
@@ -55,30 +55,14 @@ jobs:
         Invoke-WebRequest -Uri $skiaUrl -OutFile "skia.zip"
         Expand-Archive -Path "skia.zip" -DestinationPath "skia" -Force
         Write-Host "Skia downloaded and extracted"
-        Get-ChildItem "skia" | Select-Object Name
 
-    - name: Configure CMake (Fixed)
+    - name: Configure CMake
       shell: cmd
       working-directory: aseprite
       run: |
         mkdir build
         cd build
-        cmake -G Ninja ^
-          -DCMAKE_BUILD_TYPE=Release ^
-          -DCMAKE_POLICY_VERSION_MINIMUM=3.5 ^
-          -DLAF_BACKEND=skia ^
-          -DSKIA_DIR=../../skia ^
-          -DSKIA_LIBRARY_DIR=../../skia/out/Release-x64 ^
-          -DSKIA_LIBRARY=../../skia/out/Release-x64/skia.lib ^
-          -DENABLE_UI=ON ^
-          -DENABLE_TESTS=OFF ^
-          -DENABLE_BENCHMARKS=OFF ^
-          -DENABLE_TRIAL_MODE=OFF ^
-          -DENABLE_CRASH_HANDLER=OFF ^
-          -DENABLE_UPDATER=OFF ^
-          -DENABLE_STEAM=OFF ^
-          -DENABLE_DRM=OFF ^
-          ..
+        cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DLAF_BACKEND=skia -DSKIA_DIR=../../skia -DSKIA_LIBRARY_DIR=../../skia/out/Release-x64 -DSKIA_LIBRARY=../../skia/out/Release-x64/skia.lib -DENABLE_UI=ON -DENABLE_TESTS=OFF -DENABLE_BENCHMARKS=OFF -DENABLE_TRIAL_MODE=OFF -DENABLE_CRASH_HANDLER=OFF -DENABLE_UPDATER=OFF -DENABLE_STEAM=OFF -DENABLE_DRM=OFF ..
 
     - name: Build Aseprite
       shell: cmd
@@ -90,33 +74,38 @@ jobs:
       shell: powershell
       run: |
         $portableDir = "aseprite-portable"
-        New-Item -ItemType Directory -Force -Path $portableDir
+        New-Item -ItemType Directory -Force -Path $portableDir | Out-Null
         
         # Main executable
-        Copy-Item "aseprite\build\bin\aseprite.exe" "$portableDir\"
+        Copy-Item "aseprite\build\bin\aseprite.exe" "$portableDir\" -Force
         
         # Data folder
         Copy-Item "aseprite\build\bin\data" "$portableDir\" -Recurse -Force
         
         # All DLLs from build folder
-        Get-ChildItem "aseprite\build\bin\*.dll" | Copy-Item -Destination $portableDir -Force
+        $dlls = Get-ChildItem "aseprite\build\bin\*.dll" -ErrorAction SilentlyContinue
+        foreach ($dll in $dlls) {
+          Copy-Item $dll.FullName "$portableDir\" -Force
+        }
         
         # Copy Visual C++ Runtime DLLs
         $vcRuntimePath = "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Redist\MSVC"
         $vcDlls = Get-ChildItem $vcRuntimePath -Recurse -Filter "*.dll" | Where-Object {
           $_.FullName -like "*x64*" -and $_.Name -match "msvcp|vcruntime|concrt"
         }
-        $vcDlls | Copy-Item -Destination $portableDir -Force
+        foreach ($dll in $vcDlls) {
+          Copy-Item $dll.FullName "$portableDir\" -Force
+        }
         
-        Write-Host "Portable folder created with all dependencies:"
-        Get-ChildItem $portableDir | Select-Object Name, Length
+        Write-Host "Portable folder created successfully"
+        Write-Host "Files count: $((Get-ChildItem $portableDir -Recurse -File).Count)"
 
     - name: Create ZIP Package
       shell: powershell
       run: |
         Compress-Archive -Path "aseprite-portable\*" -DestinationPath "Aseprite-Portable-Windows-x64.zip" -Force
-        Write-Host "ZIP created successfully!"
-        Get-Item "Aseprite-Portable-Windows-x64.zip" | Select-Object Name, Length
+        $zipSize = (Get-Item "Aseprite-Portable-Windows-x64.zip").Length / 1MB
+        Write-Host "ZIP created successfully - Size: $([math]::Round($zipSize, 2)) MB"
 
     - name: Upload Portable ZIP
       uses: actions/upload-artifact@v4
@@ -131,26 +120,26 @@ jobs:
       with:
         files: Aseprite-Portable-Windows-x64.zip
         tag_name: v1.3.3-portable
-        name: Aseprite v1.3.3 Portable (Fully Working)
+        name: Aseprite v1.3.3 Portable
         body: |
-          ## ✅ Aseprite Portable Build (Fully Working)
+          ## Aseprite Portable Build
           
           ### Features:
-          - ✅ Version 1.3.3
-          - ✅ Windows x64
-          - ✅ Portable - No installation needed
-          - ✅ All DLLs included
-          - ✅ Works on Windows 7/8/10/11
+          - Version 1.3.3
+          - Windows x64
+          - Portable (No installation needed)
+          - All DLLs included
+          - Works on Windows 7/8/10/11
           
           ### How to Use:
           1. Download ZIP file
           2. Extract anywhere
-          3. Run `aseprite.exe`
+          3. Run aseprite.exe
           
           ### Verified:
-          - ✅ No missing DLL errors
-          - ✅ All libraries included
-          - ✅ Completely portable
+          - No missing DLL errors
+          - All libraries included
+          - Completely portable
         draft: false
         prerelease: false
       env:
@@ -164,24 +153,31 @@ jobs:
         $exePath = "aseprite\build\bin\aseprite.exe"
         if (Test-Path $exePath) {
           $size = (Get-Item $exePath).Length / 1MB
-          Write-Host "✓ aseprite.exe: $([math]::Round($size, 2)) MB"
+          Write-Host "SUCCESS: aseprite.exe found - $([math]::Round($size, 2)) MB"
         } else {
-          Write-Host "✗ FAILED: aseprite.exe not found"
+          Write-Host "ERROR: aseprite.exe not found"
           exit 1
         }
         
         $dataPath = "aseprite\build\bin\data"
         if (Test-Path $dataPath) {
           $fileCount = (Get-ChildItem $dataPath -Recurse -File).Count
-          Write-Host "✓ data folder: $fileCount files"
+          Write-Host "SUCCESS: data folder found - $fileCount files"
         } else {
-          Write-Host "✗ FAILED: data folder not found"
+          Write-Host "ERROR: data folder not found"
           exit 1
         }
         
         $dllCount = (Get-ChildItem "aseprite\build\bin\*.dll" -ErrorAction SilentlyContinue).Count
-        Write-Host "✓ DLLs found: $dllCount"
+        Write-Host "SUCCESS: DLLs found - $dllCount files"
+        
+        $zipExists = Test-Path "Aseprite-Portable-Windows-x64.zip"
+        if ($zipExists) {
+          Write-Host "SUCCESS: Portable ZIP created"
+        } else {
+          Write-Host "ERROR: ZIP not created"
+          exit 1
+        }
         
         Write-Host ""
         Write-Host "=== BUILD SUCCESSFUL ==="
-        Write-Host "Portable package ready for download!"
