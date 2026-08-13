@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aseprite Portable - Free Download</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎨</text></svg>">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav">
+            <div class="logo">🎨 Aseprite Portable</div>
+            <div class="nav-links">
+                <a href="#download">Download</a>
+                <a href="#features">Features</a>
+                <a href="#how-to">How to Use</a>
+                <a href="#faq">FAQ</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">
+                <span class="gradient-text">Aseprite Portable</span>
+            </h1>
+            <p class="hero-subtitle">
+                পোর্টেবল ভার্সন - কোনো ইন্সটলেশন লাগবে না!
+            </p>
+            <p class="hero-description">
+                Just download, extract, and run. Works on any Windows PC!
+            </p>
+            <div class="hero-buttons">
+                <a href="#download" class="btn btn-primary">
+                    ⬇️ Download Now
+                </a>
+                <a href="#features" class="btn btn-secondary">
+                    Learn More
+                </a>
+            </div>
+            <div class="hero-stats">
+                <div class="stat">
+                    <span class="stat-number">100%</span>
+                    <span class="stat-label">Portable</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">Free</span>
+                    <span class="stat-label">Download</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">v1.3.3</span>
+                    <span class="stat-label">Version</span>
+                </div>
+            </div>
+        </div>
+        <div class="hero-image">
+            <div class="floating-card">
+                <div class="pixel-art">
+                    <div class="pixel-row">
+                        <span class="pixel red"></span>
+                        <span class="pixel orange"></span>
+                        <span class="pixel yellow"></span>
+                        <span class="pixel green"></span>
+                        <span class="pixel blue"></span>
+                    </div>
+                    <div class="pixel-row">
+                        <span class="pixel orange"></span>
+                        <span class="pixel yellow"></span>
+                        <span class="pixel green"></span>
+                        <span class="pixel blue"></span>
+                        <span class="pixel purple"></span>
+                    </div>
+                    <div class="pixel-row">
+                        <span class="pixel yellow"></span>
+                        <span class="pixel green"></span>
+                        <span class="pixel blue"></span>
+                        <span class="pixel purple"></span>
+                        <span class="pixel pink"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Download Section -->
+    <section id="download" class="download-section">
+        <h2 class="section-title">📥 Download Aseprite Portable</h2>
+        <p class="section-subtitle">Choose your version below</p>
+        
+        <div class="download-cards">
+            <div class="download-card featured">
+                <div class="card-header">
+                    <h3>Windows 64-bit</h3>
+                    <span class="badge">Recommended</span>
+                </div>
+                <div class="card-body">
+                    <div class="version-info">
+                        <span class="version">v1.3.3</span>
+                        <span class="size">~25 MB</span>
+                    </div>
+                    <ul class="features-list">
+                        <li>✅ Portable - No installation</li>
+                        <li>✅ All DLLs included</li>
+                        <li>✅ Works on Windows 7/8/10/11</li>
+                        <li>✅ Extract and run instantly</li>
+                    </ul>
+                    <button class="download-btn" onclick="downloadAseprite('windows-x64')">
+                        <span class="btn-icon">⬇️</span>
+                        Download for Windows
+                    </button>
+                    <div class="loading-bar" id="loading-bar" style="display: none;">
+                        <div class="loading-progress"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="download-card">
+                <div class="card-header">
+                    <h3>Older Versions</h3>
+                    <span class="badge-secondary">Archive</span>
+                </div>
+                <div class="card-body">
+                    <div class="version-info">
+                        <span class="version">v1.2.x</span>
+                        <span class="size">~20 MB</span>
+                    </div>
+                    <ul class="features-list">
+                        <li>✅ Stable versions</li>
+                        <li>✅ Compatible with older systems</li>
+                        <li>✅ Portable builds</li>
+                    </ul>
+                    <button class="download-btn" onclick="showOlderVersions()">
+                        <span class="btn-icon">📦</span>
+                        View Old Versions
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="older-versions" class="older-versions" style="display: none;">
+            <h3>All Available Versions</h3>
+            <div class="version-list">
+                <div class="version-item">
+                    <span>v1.3.3</span>
+                    <button onclick="downloadAseprite('windows-x64')">Download</button>
+                </div>
+                <div class="version-item">
+                    <span>v1.3.2</span>
+                    <button onclick="downloadAseprite('windows-x64')">Download</button>
+                </div>
+                <div class="version-item">
+                    <span>v1.3.1</span>
+                    <button onclick="downloadAseprite('windows-x64')">Download</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features-section">
+        <h2 class="section-title">✨ Features</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🎨</div>
+                <h3>Pixel Art Tools</h3>
+                <p>Professional pixel art creation tools with layers, frames, and animations</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Fast & Lightweight</h3>
+                <p>Runs smoothly on any Windows PC without installation</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔄</div>
+                <h3>Auto-Update</h3>
+                <p>Always get the latest version from our GitHub releases</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💾</div>
+                <h3>Portable</h3>
+                <p>Carry it in USB drive, use on any computer</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <h3>Pre-configured</h3>
+                <p>All DLLs and libraries included, no dependency issues</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🆓</div>
+                <h3>Free</h3>
+                <p>Completely free to download and use</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- How to Use Section -->
+    <section id="how-to" class="how-to-section">
+        <h2 class="section-title">📖 How to Use</h2>
+        <div class="steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h3>Download</h3>
+                    <p>Click the download button and save the ZIP file</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h3>Extract</h3>
+                    <p>Right-click the ZIP file and select "Extract All"</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h3>Run</h3>
+                    <p>Open the folder and double-click <strong>aseprite.exe</strong></p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h3>Create!</h3>
+                    <p>Start creating amazing pixel art!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="faq-section">
+        <h2 class="section-title">❓ FAQ</h2>
+        <div class="faq-list">
+            <div class="faq-item" onclick="toggleFAQ(this)">
+                <div class="faq-question">
+                    <span>এটা কি সম্পূর্ণ ফ্রি?</span>
+                    <span class="faq-toggle">+</span>
+                </div>
+                <div class="faq-answer">
+                    <p>হ্যাঁ! এই portable version সম্পূর্ণ ফ্রি। কোনো hidden charge নেই।</p>
+                </div>
+            </div>
+            <div class="faq-item" onclick="toggleFAQ(this)">
+                <div class="faq-question">
+                    <span>কোনো ইন্সটলেশন লাগবে?</span>
+                    <span class="faq-toggle">+</span>
+                </div>
+                <div class="faq-answer">
+                    <p>না! এটা portable version. শুধু extract করুন এবং চালান।</p>
+                </div>
+            </div>
+            <div class="faq-item" onclick="toggleFAQ(this)">
+                <div class="faq-question">
+                    <span>কোন Windows version support করে?</span>
+                    <span class="faq-toggle">+</span>
+                </div>
+                <div class="faq-answer">
+                    <p>Windows 7, 8, 10, এবং 11 - সবগুলোতেই কাজ করবে।</p>
+                </div>
+            </div>
+            <div class="faq-item" onclick="toggleFAQ(this)">
+                <div class="faq-question">
+                    <span>DLL error আসলে কি করব?</span>
+                    <span class="faq-toggle">+</span>
+                </div>
+                <div class="faq-answer">
+                    <p>আমাদের build-এ সব DLL included আছে। তারপরও error আসলে আমাদের জানান।</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>🎨 Aseprite Portable</h3>
+                <p>Free portable version for Windows</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <a href="#download">Download</a>
+                <a href="#features">Features</a>
+                <a href="#how-to">How to Use</a>
+                <a href="#faq">FAQ</a>
+            </div>
+            <div class="footer-section">
+                <h3>Contact</h3>
+                <a href="https://github.com/YOUR_USERNAME" target="_blank">GitHub</a>
+                <a href="mailto:your@email.com">Email</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Aseprite Portable. All rights reserved.</p>
+            <p class="disclaimer">This is an unofficial portable build for educational purposes.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
