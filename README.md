@@ -66,7 +66,7 @@ Visit our **[Website](https://YOUR_USERNAME.github.io/YOUR_REPO/)** and click do
 
 ```bash
 # Clone the repository
-git clone https://github.com/YOUR_USERNAME/YOUR_REPO.git
+git clone https://github.com/Prantik123321/aseprite-cloud-build.git
 
 # Navigate to downloads folder
 cd YOUR_REPO/downloads
